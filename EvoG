@@ -1,0 +1,27 @@
+# POISSON KODLAYARAK:
+
+import matplotlib.pyplot as plt
+import numpy as np
+from math import*
+
+step=36
+avrg=432
+lmd=avrg/step
+N=650
+y=[]
+x=[]
+
+for n in range(N):
+    x.append(np.random.randint(0,lmd))
+
+for n in x:
+    y.append(exp(-lmd)*lmd**n/factorial(n))
+
+print(len(y))
+print(sum(y*avrg))
+
+plt.bar(x,y,width=0.3)
+plt.xlabel("Estimation of the Number of Almond Candies")
+plt.ylabel("Number of Person")
+plt.title("POISSON DISTRIBUTION SIMULATION")
+plt.show()
