@@ -1,0 +1,52 @@
+#Author: Mustafa RABUS
+import matplotlib.pyplot as plt
+import random
+A=100
+R,G,B=[],[],[]
+NR,NG,NB=0,0,0
+for n in range(1000):
+    r,g,b=33,33,33
+    while r>0 and b>0 :
+        R.clear(), G.clear(), B.clear()    
+        x=random.sample(range(A),r)
+        y=random.sample(range(A),r)
+        z=random.sample(range(A),g)
+        t=random.sample(range(A),g)
+        u=random.sample(range(A),b)
+        v=random.sample(range(A),b)
+        for i in range(r): R.append((x[i],y[i]))
+        for i in range(g): G.append((z[i],t[i]))
+        for i in range(b): B.append((u[i],v[i]))
+        for i in R:
+            for j in R:
+                if i==j and (R.index(i) != R.index(j)): r=r-1
+        for i in R:
+            for j in G:
+                if i==j and g>0: g=g-1
+        for i in R:
+            for j in B:
+                if i==j:
+                    win=random.randint(-1,1)
+                    if win==-1 and b>0: b=b-1
+                    elif win==1 and r>0: r=r-1
+        for i in B:
+            for j in G:
+                if i==j:
+                    win=random.randint(-1,1)
+                    if win==1 and g>0:
+                        g=g-1
+                        b=b+1
+    if r==0 and b>0: NB=NB+1
+    if b==0 and r>0: NR=NR+1
+    if g>0: NG=NG+1
+print(NR,NG,NB)
+if NB>NR and NB>NG:print("Winner Blue")
+elif NR>NB and NR>NG:print("Winner Red")
+elif NG>NB and NG>NR:print("Winner Green")
+plt.figure()
+rr,=plt.plot(x,y,"pr")
+bb,=plt.plot(u,v,"*b")
+gg,=plt.plot(z,t,".g")
+plt.legend([rr, gg, bb], [NR, NG, NB])
+plt.title("ULTIMATUM GAME SIMULATION")
+plt.show()
