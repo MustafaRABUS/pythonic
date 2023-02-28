@@ -1,0 +1,53 @@
+# ChargedParticleMatterRangeSimulation
+# Author:"Mustafa RABUS"
+
+import matplotlib.pyplot as plt
+from math import*
+import random
+
+z=2 #
+Z=82 #
+mi=3727.3794066 # MeV
+A=207.17 # amu
+d=11343.7 # Pb Kg/m3
+Ei=30 # MeV alpha
+
+dE=0.1 # MeV step
+me=0.511 # MeV
+c=3*10**8 # m/s
+e=1.602*10**(-19) # C
+k=9*10**9 # Nm2/C2
+Na=6.022*10**26 # Nucleon/Kg
+re=2.818*10**(-15) # m
+Ih=(9.76+58.8*Z**(-1.19))*Z*10**(-6) # Mev Z≥13⇒Ionization Potential
+Il=(12*Z+7)*10**(-6) # Mev Z<13⇒Ionization Potential
+Nv=d*Na/A # Atom/m3
+E,gama2,beta2,dEdx,dx,R,Rmax=[],[],[],[],[],[],0
+
+for i in range(round(Ei/dE)):
+    E.append(Ei-i*dE)
+    gama2.append(((E[i]+mi)/mi)**2)
+    beta2.append(1-(1/gama2[i]))
+    if Z>=13:dEdx.append((4*pi*re**2*z**2*Z*Nv*me/beta2[i])*(log(2*me*beta2[i]*gama2[i]/Ih)-beta2[i]))
+    else:dEdx.append((4*pi*re**2*z**2*Z*Nv*me/beta2[i])*(log(2*me*beta2[i]*gama2[i]/Il)-beta2[i]))
+    dx.append((1/dEdx[i])*dE)
+    if dx[i]>0:Rmax=Rmax+dx[i]
+    R.append(Rmax)
+
+N,Nx,Ny=10000,[],[]
+for i in range(N):
+    Nx.append(random.uniform(0,Rmax*1.2))
+    Ny.append(random.uniform(0,Ei))
+
+plt.plot(Rmax*1.2,Ei,'-b')
+plt.plot(0,0,'-b')
+plt.plot(Nx,Ny,'.b',markersize=1)
+for i in range(len(E)):
+    plt.plot(Rmax*1.2,Ei,'-b')
+    plt.plot(0,0,'-b')
+    plt.plot(R[i],E[i],'.r',markersize=7)
+    plt.xlabel("PARTICLE RANGE IN MATTER (meter)")
+    plt.ylabel("REMAINING PARTICLE ENERGY (MeV)")
+    plt.title(R[i])
+    plt.pause(0.001)
+plt.show()
