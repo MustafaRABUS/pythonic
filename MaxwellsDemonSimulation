@@ -1,0 +1,184 @@
+# Manipulating Entropy: Maxwell's Demon
+# Author:"Mustafa RABUS"
+
+import matplotlib.pyplot as plt
+from math import*
+import random
+
+# INPUTS:
+T1=273.16 # K
+T2=313.16 # K
+T0=293.16 # K
+kb=1.381*10**(-23) # J/K
+m=4.002602*1.661*10**(-27) # Kg
+L,dv,N,step=10**(-9),100,1000,500# m,m/s,-,-
+# VARIABLES:
+xr,yr,zr,xb,yb,zb,dxr,dyr,dzr,dxb,dyb,dzb,tens,v1,v2,vr,vb=[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]
+d,vend1,vend2,gv1,gv2,ngv1,ngv2=0,0,0,0,0,0,0
+# PRODUCTION:
+d0=(L**3/N)**(1/3) # m
+v0=(3*kb*T0/m)**(1/2) # m/s @ Kelvin
+dt=d0/v0 # s
+while ngv1<N:
+    nv=N*dv*4*pi**(-1/2)*(m/(2*kb*T1))**(3/2)*vend1**2*exp(-m*vend1**2/(2*kb*T1))
+    vend1=vend1+dv
+    ngv1=ngv1+round(nv)
+    if ngv1==(ngv1-round(nv))and ngv1!=0:break
+while ngv2<N:
+    nv=N*dv*4*pi**(-1/2)*(m/(2*kb*T2))**(3/2)*vend2**2*exp(-m*vend2**2/(2*kb*T2))
+    vend2=vend2+dv
+    ngv2=ngv2+round(nv)
+    if ngv2==(ngv2-round(nv)) and ngv2!=0:break
+vs1=[i for i in range(0,vend1,dv)] # m/s
+vs2=[i for i in range(0,vend2,dv)] # m/s
+nv1=[N*dv*4*pi**(-1/2)*(m/(2*kb*T1))**(3/2)*v**2*exp(-m*v**2/(2*kb*T1)) for v in vs1]
+nv2=[N*dv*4*pi**(-1/2)*(m/(2*kb*T2))**(3/2)*v**2*exp(-m*v**2/(2*kb*T2)) for v in vs2]
+for i in range(len(vs1)):
+    for j in range(round(nv1[i])):
+        v1.append(vs1[i])
+for i in range(len(vs2)):
+    for j in range(round(nv2[i])):
+        v2.append(vs2[i])
+for i in range(len(v1)):
+    gv1=gv1+(v1[i])**2
+    az=random.uniform(0,360)
+    ay=random.uniform(0,360)
+    tens=[sin(radians(az))*sin(radians(ay)),sin(radians(az))*cos(radians(ay)),cos(radians(az))]
+    random.shuffle(tens)
+    d=dt*v1[i]
+    if v1[i]<v0:
+        vr.append(v1[i])
+        xr.append(random.uniform(0,L))
+        yr.append(random.uniform(0,L))
+        zr.append(random.uniform(0,L))
+        dxr.append(d*tens[0])
+        dyr.append(d*tens[1])
+        dzr.append(d*tens[2])
+    else:
+        vb.append(v1[i])
+        xb.append(random.uniform(0,L))
+        yb.append(random.uniform(0,L))
+        zb.append(random.uniform(0,L))
+        dxb.append(d*tens[0])
+        dyb.append(d*tens[1])
+        dzb.append(d*tens[2])
+for i in range(len(v2)):
+    gv2=gv2+(v2[i])**2
+    az=random.uniform(0,360)
+    ay=random.uniform(0,360)
+    tens=[sin(radians(az))*sin(radians(ay)),sin(radians(az))*cos(radians(ay)),cos(radians(az))]
+    random.shuffle(tens)
+    d=dt*v2[i]
+    if v2[i]<v0:
+        vr.append(v2[i])
+        xr.append(random.uniform(L,2*L))
+        yr.append(random.uniform(0,L))
+        zr.append(random.uniform(0,L))
+        dxr.append(d*tens[0])
+        dyr.append(d*tens[1])
+        dzr.append(d*tens[2])
+    else:
+        vb.append(v2[i])
+        xb.append(random.uniform(L,2*L))
+        yb.append(random.uniform(0,L))
+        zb.append(random.uniform(0,L))
+        dxb.append(d*tens[0])
+        dyb.append(d*tens[1])
+        dzb.append(d*tens[2])
+# SIMULATION:
+for r in range(step):
+    ax = plt.axes(projection='3d')
+    ax.view_init(20,-90)
+    ax.plot3D(0, 0, 0)
+    ax.plot3D(2*L, L, L)
+    ax.grid()
+    ax.plot3D(xr, yr, zr,".r",markersize='3')
+    ax.plot3D(xb, yb, zb,".b",markersize='3')
+    ax.set_title(f"Temperature(C): {0}>>> {T1}<Left|Right>{T2} <<<{40}\nCount: {ngv1}<Left|Right>{ngv2}")
+    ax.set_xlabel('X Label (m)')
+    ax.set_ylabel('Y Label (m)')
+    ax.set_zlabel('Z Label (m)')
+    plt.pause(0.01)
+    plt.clf()    
+    T1=round((m*sqrt(gv1/ngv1)**2/(3*kb)-273.16),4)
+    T2=round((m*sqrt(gv2/ngv2)**2/(3*kb)-273.16),4)
+    for i in range(len(vr)):
+        xr[i]=xr[i]+dxr[i]
+        yr[i]=yr[i]+dyr[i]
+        zr[i]=zr[i]+dzr[i]
+        if xr[i]>=L and (xr[i]-dxr[i])<L:
+            gv1=gv1-vr[i]
+            gv2=gv2+vr[i]
+            ngv1=ngv1-1
+            ngv2=ngv2+1
+        elif xr[i]<=L and (xr[i]-dxr[i])>L:
+            xr[i]=2*L-xr[i]
+            dxr[i]=-dxr[i]
+        if xr[i]>=2*L:
+            xr[i]=4*L-xr[i]
+            dxr[i]=-dxr[i]
+        elif xr[i]<=0:
+            xr[i]=-xr[i]
+            dxr[i]=-dxr[i]
+        if yr[i]>=L:
+            yr[i]=2*L-yr[i]
+            dyr[i]=-dyr[i]
+        elif yr[i]<=0:
+            yr[i]=-yr[i]
+            dyr[i]=-dyr[i]
+        if zr[i]>=L:
+            zr[i]=2*L-zr[i]
+            dzr[i]=-dzr[i]
+        elif zr[i]<=0:
+            zr[i]=-zr[i]
+            dzr[i]=-dzr[i]
+    for i in range(len(vb)):
+        xb[i]=xb[i]+dxb[i]
+        yb[i]=yb[i]+dyb[i]
+        zb[i]=zb[i]+dzb[i]    
+        if xb[i]>=L and (xb[i]-dxb[i])<L:
+            xb[i]=2*L-xb[i]
+            dxb[i]=-dxb[i]
+        elif xb[i]<=L and (xb[i]-dxb[i])>L:
+            gv1=gv1+vb[i]
+            gv2=gv2-vb[i] 
+            ngv1=ngv1+1
+            ngv2=ngv2-1 
+        if xb[i]>=2*L:
+            xb[i]=4*L-xb[i]
+            dxb[i]=-dxb[i]
+        elif xb[i]<=0:
+            xb[i]=-xb[i]
+            dxb[i]=-dxb[i]
+        if yb[i]>=L:
+            yb[i]=2*L-yb[i]
+            dyb[i]=-dyb[i]
+        elif yb[i]<=0:
+            yb[i]=-yb[i]
+            dyb[i]=-dyb[i]
+        if zb[i]>=L:
+            zb[i]=2*L-zb[i]
+            dzb[i]=-dzb[i]
+        elif zb[i]<=0:
+            zb[i]=-zb[i]
+            dzb[i]=-dzb[i]
+
+ax = plt.axes(projection='3d')
+ax.view_init(20,-90)
+ax.plot3D(0, 0, 0)
+ax.plot3D(2*L, L, L)
+ax.grid()
+ax.plot3D(xr, yr, zr,".r",markersize='3')
+ax.plot3D(xb, yb, zb,".b",markersize='3')
+ax.set_title(f"Temperature(C): {0}>>> {T1}<Left|Right>{T2} <<<{40}\nCount: {ngv1}<Left|Right>{ngv2}")
+ax.set_xlabel('X Label (m)')
+ax.set_ylabel('Y Label (m)')
+ax.set_zlabel('Z Label (m)')
+plt.show()
+
+plt.plot(vs1,nv1,'-.r')
+plt.plot(vs2,nv2,'-.b')
+plt.legend(["0 Celsius Helium","40 Celsius Helium"])
+plt.xlabel('Particle Speed (m/s)')
+plt.ylabel('Count / 1000 Particle')
+plt.show()
