@@ -1,0 +1,84 @@
+# MassSpectrometry
+# Author:"Mustafa RABUS"
+
+import matplotlib.pyplot as plt
+from math import*
+import random
+
+# CONSTANTS:
+
+e=1.602176634*10**(-19) # C
+amu=1.6605402*10**(-27) # Kg
+k=1/(4*pi*8.854187817*10**(-12)) # Nm2/C2
+c=2.99792458*10**8 # m/s
+hb=6.626070*10**(-34)/(2*pi)
+
+# INPUTS:
+
+Z,mass,rnist=[],[],[]
+with open("Mass.txt","r") as Mass: Mass=Mass.readlines()
+for i in range(len(Mass)): mass.append(float(Mass[i]))
+with open("Elements.txt","r") as Elements: Z=Elements.readlines()
+
+z=int(input('Enter Atomic Number:'))
+print(f"Entered Element: {Z[z]} A={mass[z]}")
+q=e*z # C
+A=mass[z] # amu
+m=A*amu # Kg
+volt=10**4 # volt
+B=2 # Tesla
+
+# PARAMETERS:
+
+for i in range(1,len(mass)):
+    rnist.append(sqrt(2*volt*mass[i]*amu/(i*e))/B)
+ve=sqrt(2*q*volt/m) # m/s
+gama=((1-(ve**2/c**2))**(-1/2)) # rolativistic speeds
+Fb=q*ve*B # N
+r=m*ve/(q*B) # m
+T=2*pi*m/(q*B) # s
+dt=T/360 # s
+dx=ve*dt # m
+d=r
+x=-d # m
+y=-r # m
+do=degrees((2*pi/T)*dt) # degree
+o=0 # degree
+
+# SIMULATION:
+
+kat=-r
+for i in range(100):
+    kat=kat+r/50
+    plt.plot(0,kat,"*g",markersize=2)
+plt.plot(-d,-r,'.r',markersize=0.5)
+plt.plot(r,r,'-b',markersize=0.5)
+plt.grid()
+
+step=0
+while x<0:
+    step=step+1
+    x=-d+(1/2)*(q*volt/(d*m))*(step*dt)**2
+    plt.xlabel(f"x(m)= {x}")
+    plt.ylabel(f"y(m)= {y}")
+    plt.title(f"MASS SPECTROMETRIC SIMULATION\nEntered Z={z}: {Z[z]}")
+    EE,=plt.plot(x,y,".r",markersize=6)
+    plt.legend([EE],['Beam Acceleration In Electric Field'])
+    plt.pause(0.1)
+while x>=0 and o<180:#
+    o=o+do
+    x=x+dx*cos(radians(o))
+    y=y+dx*sin(radians(o))
+    plt.xlabel(f"x(m)= {x}\nr(m)= {sqrt(x**2+y**2)}")
+    plt.ylabel(f"y(m)= {y}")
+    plt.title(f"MASS SPECTROMETRIC SIMULATION\nEntered Z={z}: {Z[z]}")
+    BB,=plt.plot(x,y,".b",markersize=6)
+    plt.legend([BB],['Beam Bending In Magnetic Field'])
+    plt.pause(0.1)
+rsim=sqrt(x**2+y**2)
+
+for i in range(len(rnist)):
+    if round(rnist[i],6)==round(rsim,6):
+        plt.xlabel(f"Simulation r(m)= {rsim}\nEntered Z={z}: {Z[z]} Simulation Output: Z={i+1}: {Z[i+1]}")
+plt.pause(0.1)
+plt.show()
