@@ -1,0 +1,66 @@
+# CYCLOTRON SIMULATION
+# Author:"Mustafa RABUS"
+
+import matplotlib.pyplot as plt
+from math import*
+
+# CONSTANTS:
+e=1.602176634*10**(-19) # C
+amu=1.6605402*10**(-27) # Kg
+c=2.99792458*10**8 # m/s
+particle=[['proton',1,1.00782503223],['deuteron',1,2.01410177812],['triton',1,3.0160492779],
+          ['helion',2,3.014932247175],['alpha',2,4.00260325413]] #particle=[name,z,M]
+
+# INPUTS:
+
+print('proton:  0\ndeuteron:1\ntriton:  2\nhelion:  3\nalpha:   4')
+PN=int(input('Enter Particle Index:'))
+Eout=float(input('Enter Output Energy (MeV):'))
+R=1/2 # m
+
+# VARIABLES:
+
+z=particle[PN][1]
+q=e*z # C
+m=amu*particle[PN][2] # Kg
+volt=Eout*10**6/10 # Volt
+dE=q*volt/(e*10**6) # MeV
+gama=(Eout*e*10**6/(m*c**2))+1
+v=sqrt(2*Eout*e*10**6/(gama*m)) # m/s
+B=gama*m*v/(q*R) # Tesla
+x=0 # m
+y=0 # m
+o=0 # degree
+
+# SIMULATION:
+
+kat=-1.3*R
+for i in range(100):
+    kat=kat+1.3*R/50
+    plt.plot(0,kat,"_b",markersize=10)
+plt.plot(-R,-1.3*R,'-b',markersize=0.5)
+plt.plot(R,1.3*R,'-b',markersize=0.5)
+plt.grid()
+for i in range(1,(round(Eout/dE)+1)):
+    E=i*dE
+    gama=(i*q*volt/(m*c**2))+1 # -
+    v=c*sqrt(1-gama**(-2)) # m/s
+    T=2*pi*m*gama/(q*B) # s
+    dt=T/180 # s
+    do=degrees((2*pi/T)*dt) # degree
+    dr=v*dt
+    while (o/180)<i:
+        o=o+do
+        x=x+dr*cos(radians(o))
+        y=y+dr*sin(radians(o))
+        plt.xlabel("X Label (m)")
+        plt.ylabel("Y Label (m)")
+        plt.title(f"Expected Output: {Eout} MeV {particle[PN][0]}\nAcceleration Voltage (MV)= {volt/10**6} >>> Particle Energy (MeV)= {E}\nParticle Speed (m/s)= {v}")
+        if x>0:
+            Right,=plt.plot(x,y,".r",markersize=6)
+            plt.legend([Right],['-| |+'])
+        elif x<=0:
+            Left,=plt.plot(x,y,".k",markersize=6)
+            plt.legend([Left],['+| |-'])
+        plt.pause(0.01)
+plt.show()
