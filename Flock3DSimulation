@@ -1,0 +1,137 @@
+# 3D Flock Simulation
+# Author:"Mustafa RABUS"
+
+import matplotlib.pyplot as plt
+from math import*
+import random
+
+#INPUTS:
+L,element,herd,step,repeat,seperation=100,500,1,2,1000,5
+
+#VARIABLES:
+x,y,z,dx,dy,dz,xh,yh,zh,dxh,dyh,dzh,tens,variation=[],[],[],[],[],[],[],[],[],[],[],[],[],[]
+
+#PRODUCTIONS:
+for i in range(element):
+    x.append(random.uniform(0,L))
+    y.append(random.uniform(0,L))
+    z.append(random.uniform(0,L))
+    az=random.uniform(0,360)
+    ay=random.uniform(0,360)
+    tens=[sin(radians(az))*sin(radians(ay)),sin(radians(az))*cos(radians(ay)),cos(radians(az))]
+    random.shuffle(tens)
+    dx.append(step*tens[0])
+    dy.append(step*tens[1])
+    dz.append(step*tens[2])
+for i in range(herd):
+    xh.append(random.uniform(0,L))
+    yh.append(random.uniform(0,L))
+    zh.append(random.uniform(0,L))
+    az=random.uniform(0,360)
+    ay=random.uniform(0,360)
+    tens=[sin(radians(az))*sin(radians(ay)),sin(radians(az))*cos(radians(ay)),cos(radians(az))]
+    random.shuffle(tens)
+    dxh.append(step*tens[0])
+    dyh.append(step*tens[1])
+    dzh.append(step*tens[2])
+
+#SIMULATIONS:
+for rep in range(repeat):
+    ax = plt.axes(projection='3d')
+    ax.view_init(15,-88)
+    ax.plot3D(0, 0, 0)
+    ax.plot3D(L, L, L)
+    ax.grid()
+    ax.plot3D(x,y,z,"*b",markersize='2')
+    ax.plot3D(xh,yh,zh,"*r",markersize='2')
+    ax.set_title(f'FLOCK\nFree Elements: {len(x)}\nHerd Elements: {len(xh)}')
+    ax.set_xlabel('X Label (m)')
+    ax.set_ylabel('Y Label (m)')
+    ax.set_zlabel('Z Label (m)')
+    plt.pause(0.01)
+    plt.clf()
+    for i in range(len(x)):
+        x[i]=x[i]+dx[i]
+        y[i]=y[i]+dy[i]
+        z[i]=z[i]+dz[i]
+        if x[i]>=L:
+            x[i]=2*L-x[i]
+            dx[i]=-dx[i]
+        elif x[i]<=0:
+            x[i]=-x[i]
+            dx[i]=-dx[i]
+        if y[i]>=L:
+            y[i]=2*L-y[i]
+            dy[i]=-dy[i]
+        elif y[i]<=0:
+            y[i]=-y[i]
+            dy[i]=-dy[i]
+        if z[i]>=L:
+            z[i]=2*L-z[i]
+            dz[i]=-dz[i]
+        elif z[i]<=0:
+            z[i]=-z[i]
+            dz[i]=-dz[i]
+    for j in range(len(xh)):
+        xh[j]=xh[j]+dxh[j]
+        yh[j]=yh[j]+dyh[j]
+        zh[j]=zh[j]+dzh[j]
+        if xh[j]>=L:
+            xh[j]=2*L-xh[j]
+            dxh[j]=-dxh[j]
+        elif xh[j]<=0:
+            xh[j]=-xh[j]
+            dxh[j]=-dxh[j]
+        if yh[j]>=L:
+            yh[j]=2*L-yh[j]
+            dyh[j]=-dyh[j]
+        elif yh[j]<=0:
+            yh[j]=-yh[j]
+            dyh[j]=-dyh[j]
+        if zh[j]>=L:
+            zh[j]=2*L-zh[j]
+            dzh[j]=-dzh[j]
+        elif zh[j]<=0:
+            zh[j]=-zh[j]
+            dzh[j]=-dzh[j]
+    if len(x)>1:
+        n=0
+        for i in range(len(x)):
+            for j in range(len(xh)):
+                if sqrt((xh[j]-x[i-n])**2+(yh[j]-y[i-n])**2+(zh[j]-z[i-n])**2)<seperation:
+                    xh.append((xh[j]-dx[i-n]*seperation/step))
+                    yh.append((yh[j]-dy[i-n]*seperation/step))
+                    zh.append((zh[j]-dz[i-n]*seperation/step))
+                    dxh.append(dxh[j])
+                    dyh.append(dyh[j])
+                    dzh.append(dzh[j])
+                    x.remove(x[i-n])
+                    y.remove(y[i-n])
+                    z.remove(z[i-n])
+                    dx.remove(dx[i-n])
+                    dy.remove(dy[i-n])
+                    dz.remove(dz[i-n])
+                    n=n+1
+    variation.append([rep,len(x),len(xh)])
+ax = plt.axes(projection='3d')
+ax.view_init(15,-88)
+ax.plot3D(0, 0, 0)
+ax.plot3D(L, L, L)
+ax.grid()
+ax.plot3D(x,y,z,"*b",markersize='2')
+ax.plot3D(xh,yh,zh,"*r",markersize='2')
+ax.set_title(f'FLOCK\nFree Elements: {len(x)}\nHerd Elements: {len(xh)}')
+ax.set_xlabel('X Label (m)')
+ax.set_ylabel('Y Label (m)')
+ax.set_zlabel('Z Label (m)')
+plt.show()
+
+plt.xlabel("Step")
+plt.ylabel("Population")
+plt.title("HERD vs FREE ELEMENTS")
+plt.grid()
+for i in variation:
+    e,=plt.plot(i[0],i[1],".b",markersize='3')
+    h,=plt.plot(i[0],i[2],".r",markersize='3')
+    plt.legend([e,h],[f'Free Elements: {i[1]}',f'Herd Elements: {i[2]}'])
+plt.show()
