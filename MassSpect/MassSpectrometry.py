@@ -19,19 +19,20 @@ B=int(input("Enter Bending Magnetic Field (Tesla)="))
 q=e*Z # C
 rnist=[]
 zlist=[]
-with open("ElementMass.csv", "r", encoding="utf-8") as file:
+file_path ="................................./ElementMass.csv" # <------------- USER INPUT.
+with open(file_path, "r", encoding="utf-8") as file:
     reader = csv.reader(file)
     for i, row in enumerate(reader, start=1):
         rnist.append(sqrt(2*volt*float(row[1])*amu/(i*e))/B)
-        zlist.append([row[0],row[1]])
+        zlist.append(([row[0],row[1]]))
         if i == Z:
             EnteredElement=row[0]
             EnteredAtomicMass=row[1]
             A=float(row[1])
             print ("Entered Element=",EnteredElement, " Entered Atomic Mass=",EnteredAtomicMass)
-m=A*amu # Kg
 
 # VARIABLES:
+m=A*amu # Kg
 ve=sqrt(2*q*volt/m) # m/s
 Fb=q*ve*B # N
 r=m*ve/(q*B) # m
@@ -74,7 +75,7 @@ while x>=0 and o<180:
     plt.pause(0.1)
 rsim=sqrt(x**2+y**2)
 for i in range(len(rnist)):
-    if round(rnist[i],6)==round(rsim,6):
-        plt.xlabel(f"Simulation r(m)= {rsim}\nEntered Z={Z}: {EnteredElement} Simulation Output={zlist[i]}")
+    if round(rnist[i],9)==round(rsim,9):
+        plt.xlabel(f"Simulation r(m)= {rsim}\nEntered Z={Z}: {EnteredElement} - Simulation Output={zlist[i]}")
 plt.pause(0.1)
 plt.show()
