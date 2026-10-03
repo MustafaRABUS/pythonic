@@ -1,0 +1,86 @@
+# MassSpectrometry
+# Author:"Mustafa RABUS"
+
+import matplotlib.pyplot as plt
+from math import*
+import csv
+
+# CONSTANTS:
+e=1.602176634*10**(-19) # C
+amu=1.6605402*10**(-27) # Kg
+k=1/(4*pi*8.854187817*10**(-12)) # Nm2/C2
+c=2.99792458*10**8 # m/s
+hb=6.626070*10**(-34)/(2*pi)
+
+# INPUTS:
+Z=int(input('Enter Atomic Number='))
+volt=int(input("Enter Acceleration Voltage(Volt)="))
+B=int(input("Enter Bending Magnetic Field (Tesla)="))
+q=e*Z # C
+rnist=[]
+zlist=[]
+diff=[]
+out=""
+file_path ="/????????????????????????/ElementMass.csv" <------------:USER_INPUT.
+with open(file_path, "r", encoding="utf-8") as file:
+    reader = csv.reader(file)
+    for i, row in enumerate(reader, start=1):
+        rnist.append(sqrt(2*volt*float(row[1])*amu/(i*e))/B)
+        zlist.append(([row[0],row[1]]))
+        if i == Z:
+            EnteredElement=row[0]
+            EnteredAtomicMass=row[1]
+            A=float(row[1])
+            print ("Entered Element=",EnteredElement, " Entered Atomic Mass=",EnteredAtomicMass)
+
+# VARIABLES:
+m=A*amu # Kg
+ve=sqrt(2*q*volt/m) # m/s
+Fb=q*ve*B # N
+r=m*ve/(q*B) # m
+T=2*pi*m/(q*B) # s
+dt=T/360 # s
+dx=ve*dt # m
+d=r
+x=-d # m
+y=-r # m
+do=degrees((2*pi/T)*dt) # degree
+o=0 # degree
+
+# SIMULATION:
+kat=-r
+for i in range(100):
+    kat=kat+r/50
+    plt.plot(0,kat,"*g",markersize=3)
+plt.plot(-d,-r)
+plt.plot(r,r)
+plt.grid()
+step=0
+while x<0:
+    step=step+1
+    x=-d+(1/2)*(q*volt/(d*m))*(step*dt)**2
+    plt.xlabel(f"x(m)= {x}")
+    plt.ylabel(f"y(m)= {y}")
+    plt.title(f"MASS SPECTROMETRIC SIMULATION\nEntered Z={Z}: {EnteredElement}")
+    EE,=plt.plot(x,y,".r",markersize=6)
+    plt.legend([EE],['Beam Acceleration In Electric Field'])
+    plt.pause(0.1)
+while x>=0 and o<180:
+    o=o+do
+    x=x+dx*cos(radians(o))
+    y=y+dx*sin(radians(o))
+    plt.xlabel(f"x(m)= {x}\nr(m)= {sqrt(x**2+y**2)}")
+    plt.ylabel(f"y(m)= {y}")
+    plt.title(f"MASS SPECTROMETRIC SIMULATION\nEntered Z={Z}: {EnteredElement}")
+    BB,=plt.plot(x,y,".b",markersize=6)
+    plt.legend([BB],['Beam Bending In Magnetic Field'])
+    plt.pause(0.1)
+rsim=sqrt(x**2+y**2)
+for i in range(len(rnist)):
+    diff.append(abs(rsim-rnist[i]))
+for i in range(len(rnist)):
+    if min(diff)==diff[i]:out=zlist[i]
+print("Simulation Output=",out)
+plt.xlabel(f"Simulation r(m)= {rsim}\nEntered Z={Z}: {EnteredElement} - Simulation Output={out}")
+plt.pause(0.1)
+plt.show()
