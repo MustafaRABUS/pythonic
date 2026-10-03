@@ -19,8 +19,10 @@ B=int(input("Enter Bending Magnetic Field (Tesla)="))
 q=e*Z # C
 rnist=[]
 zlist=[]
-file_path ="................................./ElementMass.csv" # <------------- USER INPUT.
-with open(file_path, "r", encoding="utf-8") as file:
+diff=[]
+out=""
+dosya_yolu ="/home/user/Documents/Pyth/MassSpect/ElementMass.csv"
+with open(dosya_yolu, "r", encoding="utf-8") as file:
     reader = csv.reader(file)
     for i, row in enumerate(reader, start=1):
         rnist.append(sqrt(2*volt*float(row[1])*amu/(i*e))/B)
@@ -75,7 +77,10 @@ while x>=0 and o<180:
     plt.pause(0.1)
 rsim=sqrt(x**2+y**2)
 for i in range(len(rnist)):
-    if round(rnist[i],9)==round(rsim,9):
-        plt.xlabel(f"Simulation r(m)= {rsim}\nEntered Z={Z}: {EnteredElement} - Simulation Output={zlist[i]}")
+    diff.append(abs(rsim-rnist[i]))
+for i in range(len(rnist)):
+    if min(diff)==diff[i]:out=zlist[i]
+print("Simulation Output=",out)
+plt.xlabel(f"Simulation r(m)= {rsim}\nEntered Z={Z}: {EnteredElement} - Simulation Output={out}")
 plt.pause(0.1)
 plt.show()
